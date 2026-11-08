@@ -28,7 +28,7 @@ body{
 }
 body::after{ /* scanlines */
   content:""; position:fixed; inset:0; pointer-events:none; z-index:50;
-  background:repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px);
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.09) 0 1px, transparent 1px 4px);
   mix-blend-mode:multiply;
 }
 .wrap{max-width:1100px; margin:0 auto; padding:56px 24px 40px}
@@ -77,6 +77,15 @@ h1::after{color:var(--cyan); transform:translate(-3px,0); clip-path:inset(55% 0 
 .go i{display:block; height:2px; width:36px; background:var(--c); box-shadow:0 0 8px var(--c); transition:width .18s}
 .card:hover .go i,.card:focus-visible .go i{width:84px}
 
+
+/* progress (bottom-right) */
+.card{padding-bottom:30px}
+.pct{position:absolute; right:26px; bottom:22px; text-align:right; line-height:1; display:flex; flex-direction:column; align-items:flex-end; gap:4px}
+.pct b{font-family:var(--font-d); font-weight:900; font-size:clamp(26px,3.4vw,36px); color:var(--c); text-shadow:0 0 14px color-mix(in srgb, var(--c) 60%, transparent)}
+.pct small{font-weight:700; letter-spacing:.1em; font-size:13px; color:var(--dim)}
+.bar{position:absolute; left:4px; right:0; bottom:0; height:4px; background:rgba(255,255,255,.07)}
+.bar i{display:block; height:100%; width:var(--p,0%); background:var(--c); box-shadow:0 0 10px var(--c); transition:width .5s ease}
+
 /* each card uses the accent color of the page it links to */
 .c1{--c:#05d9e8} /* GRE: cyan */
 .c2{--c:#fcee0a} /* 400: yellow */
@@ -105,32 +114,40 @@ footer{margin-top:56px; padding-top:18px; border-top:1px solid rgba(25,242,224,.
   </header>
 
   <main class="grid">
-    <a class="card c1" href="cyberpunk_gre_vocabulary.html">
+    <a class="card c1" href="cyberpunk_gre_vocabulary.html" data-key="cv_mastered_gre" data-total="1111">
       <span class="tag">GRE</span>
       <h2>GRE Cyber Vocab</h2>
       <p>Corp-grade lexicon for the GRE. Decrypt the high-tier words before the megacorps lock you out.</p>
       <span class="go">ENTER <i></i></span>
+      <span class="pct" aria-label="Words completed"><b>0%</b><small>0 / 0</small></span>
+      <span class="bar"><i></i></span>
     </a>
 
-    <a class="card c2" href="cyberpunk_vocab_400_flashcards_1.html">
+    <a class="card c2" href="cyberpunk_vocab_400_flashcards_1.html" data-key="cv_mastered" data-total="400">
       <span class="tag">400 WORDS</span>
       <h2>Cyber Vocab 400</h2>
       <p>400 data shards for rapid-fire neural drills. Flash, flip, burn them into memory.</p>
       <span class="go">ENTER <i></i></span>
+      <span class="pct" aria-label="Words completed"><b>0%</b><small>0 / 0</small></span>
+      <span class="bar"><i></i></span>
     </a>
 
-    <a class="card c3" href="cyberpunk_vocab_520_flashcards_1.html">
+    <a class="card c3" href="cyberpunk_vocab_520_flashcards_1.html" data-key="cv_mastered_520" data-total="520">
       <span class="tag">520 WORDS</span>
       <h2>Cyber Vocab 520</h2>
       <p>520 encrypted vocab chips from the black market. A deeper stash for serious netrunners.</p>
       <span class="go">ENTER <i></i></span>
+      <span class="pct" aria-label="Words completed"><b>0%</b><small>0 / 0</small></span>
+      <span class="bar"><i></i></span>
     </a>
 
-    <a class="card c4" href="cyberpunk_vocab_az_1925.html">
+    <a class="card c4" href="cyberpunk_vocab_az_1925.html" data-key="cv_mastered_az" data-total="1925">
       <span class="tag">A–Z</span>
       <h2>A-Z Cyber Vocab</h2>
       <p>The full A-Z archive, indexed across the mainframe. Every word, every sector, zero blind spots.</p>
       <span class="go">ENTER <i></i></span>
+      <span class="pct" aria-label="Words completed"><b>0%</b><small>0 / 0</small></span>
+      <span class="bar"><i></i></span>
     </a>
   </main>
 
@@ -139,5 +156,27 @@ footer{margin-top:56px; padding-top:18px; border-top:1px solid rgba(25,242,224,.
     <span>STAY SHARP. STAY NEON.</span>
   </footer>
 </div>
+<script>
+(function(){
+  function readDone(key){
+    try{ var a=JSON.parse(localStorage.getItem(key)||'[]'); return Array.isArray(a)?new Set(a).size:0; }
+    catch(e){ return 0; }
+  }
+  function update(){
+    document.querySelectorAll('.card[data-key]').forEach(function(card){
+      var total=+card.dataset.total, done=Math.min(readDone(card.dataset.key),total);
+      var p=total?done/total*100:0;
+      var txt=(p>0&&p<10)?p.toFixed(1):Math.round(p);
+      card.querySelector('.pct b').textContent=txt+'%';
+      card.querySelector('.pct small').textContent=done+' / '+total;
+      card.querySelector('.bar i').style.setProperty('--p',p+'%');
+    });
+  }
+  update();
+  addEventListener('pageshow',update);
+  addEventListener('storage',update);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) update(); });
+})();
+</script>
 </body>
 </html>
