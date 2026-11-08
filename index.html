@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CYBER VOCAB // HUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0508; --bg2:#180a0c; --ink:#e9f7f4; --dim:#8aa5a1;
+  --cyan:#19f2e0; --red:#ff3d52; --yellow:#fff75e; --pink:#ff5c8d;
+  --font-d:'Orbitron',system-ui,sans-serif;
+  --font-b:'Rajdhani',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{
+  min-height:100vh; color:var(--ink); font-family:var(--font-b); font-size:18px;
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(255,61,82,.22), transparent 60%),
+    radial-gradient(800px 500px at 0% 110%, rgba(25,242,224,.16), transparent 60%),
+    linear-gradient(rgba(25,242,224,.05) 1px, transparent 1px) 0 0/48px 48px,
+    linear-gradient(90deg, rgba(25,242,224,.05) 1px, transparent 1px) 0 0/48px 48px,
+    var(--bg);
+  overflow-x:hidden;
+}
+body::after{ /* scanlines */
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:50;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px);
+  mix-blend-mode:multiply;
+}
+.wrap{max-width:1100px; margin:0 auto; padding:56px 24px 40px}
+
+header{margin-bottom:56px}
+.status{font-family:var(--font-b); color:var(--cyan); font-weight:700; letter-spacing:.12em; font-size:15px}
+.status::before{content:""; display:inline-block; width:9px; height:9px; background:var(--red); margin-right:10px; box-shadow:0 0 10px var(--red); animation:blink 1.2s steps(2) infinite}
+h1{
+  font-family:var(--font-d); font-weight:900; line-height:.95; margin:18px 0 18px;
+  font-size:clamp(44px,10vw,112px); letter-spacing:-.01em; position:relative; display:inline-block;
+  text-shadow:0 0 24px rgba(25,242,224,.35);
+}
+h1::before,h1::after{content:attr(data-t); position:absolute; inset:0; pointer-events:none}
+h1::before{color:var(--red); transform:translate(3px,0); clip-path:inset(0 0 55% 0); mix-blend-mode:screen; animation:glitch 4.5s infinite}
+h1::after{color:var(--cyan); transform:translate(-3px,0); clip-path:inset(55% 0 0 0); mix-blend-mode:screen; animation:glitch 4.5s infinite reverse}
+.lead{font-family:var(--font-b); color:var(--dim); max-width:56ch; line-height:1.7; font-size:17px}
+
+.grid{display:grid; grid-template-columns:repeat(2,1fr); gap:28px}
+.card{
+  --c:var(--red);
+  position:relative; display:flex; flex-direction:column; gap:14px; min-height:230px;
+  padding:26px 26px 22px; color:inherit; text-decoration:none;
+  background:linear-gradient(160deg, rgba(24,10,12,.92), rgba(10,5,8,.96));
+  border:1px solid color-mix(in srgb, var(--c) 55%, transparent);
+  clip-path:polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+  transition:transform .18s ease, border-color .18s, box-shadow .18s, background .18s;
+}
+.card::before{ /* neon edge */
+  content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--c); box-shadow:0 0 18px var(--c);
+}
+.card::after{ /* cut corner accent */
+  content:""; position:absolute; top:0; right:0; width:28px; height:28px;
+  background:linear-gradient(225deg, var(--c) 0 50%, transparent 50%); opacity:.9;
+}
+.card:hover,.card:focus-visible{
+  transform:translate(-3px,-3px); outline:none;
+  background:linear-gradient(160deg, color-mix(in srgb, var(--c) 16%, #180a0c), rgba(10,5,8,.96));
+  border-color:var(--c);
+  filter:drop-shadow(6px 6px 0 color-mix(in srgb, var(--c) 70%, transparent));
+}
+.card:focus-visible{outline:2px dashed var(--c); outline-offset:4px}
+.tag{font-weight:700; letter-spacing:.14em; font-size:14px; color:var(--c)}
+.card h2{font-family:var(--font-d); font-weight:800; font-size:clamp(22px,3vw,30px); line-height:1.1}
+.card p{font-family:var(--font-b); color:var(--dim); line-height:1.6; font-size:16px; flex:1}
+.go{font-family:var(--font-d); font-size:13px; font-weight:500; letter-spacing:.14em; color:var(--c); display:flex; align-items:center; gap:10px}
+.go i{display:block; height:2px; width:36px; background:var(--c); box-shadow:0 0 8px var(--c); transition:width .18s}
+.card:hover .go i,.card:focus-visible .go i{width:84px}
+
+.c1{--c:var(--red)} .c2{--c:var(--yellow)} .c3{--c:var(--pink)} .c4{--c:var(--cyan)}
+
+footer{margin-top:56px; padding-top:18px; border-top:1px solid rgba(25,242,224,.25); color:var(--dim); font-size:15px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px}
+
+@keyframes blink{50%{opacity:.15}}
+@keyframes glitch{
+  0%,86%,100%{transform:translate(0,0)}
+  88%{transform:translate(5px,-2px)} 90%{transform:translate(-5px,2px)} 92%{transform:translate(3px,1px)} 94%{transform:translate(0,0)}
+}
+@media (max-width:720px){ .grid{grid-template-columns:1fr} .wrap{padding-top:36px} }
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important; transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="status">SYSTEM ONLINE · SELECT A TERMINAL</div>
+    <h1 data-t="CYBER VOCAB">CYBER VOCAB</h1>
+    <p class="lead">Four neural-linked terminals, one jack-in point. Pick a node, plug into the grid, and download the words straight into your cortex.</p>
+  </header>
+
+  <main class="grid">
+    <a class="card c1" href="cyberpunk_gre_vocabulary.html">
+      <span class="tag">GRE</span>
+      <h2>GRE Cyber Vocab</h2>
+      <p>Corp-grade lexicon for the GRE. Decrypt the high-tier words before the megacorps lock you out.</p>
+      <span class="go">ENTER <i></i></span>
+    </a>
+
+    <a class="card c2" href="cyberpunk_vocab_400_flashcards_1.html">
+      <span class="tag">400 WORDS</span>
+      <h2>Cyber Vocab 400</h2>
+      <p>400 data shards for rapid-fire neural drills. Flash, flip, burn them into memory.</p>
+      <span class="go">ENTER <i></i></span>
+    </a>
+
+    <a class="card c3" href="cyberpunk_vocab_520_flashcards_1.html">
+      <span class="tag">520 WORDS</span>
+      <h2>Cyber Vocab 520</h2>
+      <p>520 encrypted vocab chips from the black market. A deeper stash for serious netrunners.</p>
+      <span class="go">ENTER <i></i></span>
+    </a>
+
+    <a class="card c4" href="cyberpunk_vocab_az_1925.html">
+      <span class="tag">A–Z</span>
+      <h2>A-Z Cyber Vocab</h2>
+      <p>The full A-Z archive, indexed across the mainframe. Every word, every sector, zero blind spots.</p>
+      <span class="go">ENTER <i></i></span>
+    </a>
+  </main>
+
+  <footer>
+    <span>NODE 4 / 4 LINKED</span>
+    <span>STAY SHARP. STAY NEON.</span>
+  </footer>
+</div>
+</body>
+</html>
