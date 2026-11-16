@@ -94,6 +94,7 @@ h1::after{color:var(--cyan); transform:translate(-3px,0); clip-path:inset(55% 0 
 .c2{--c:#fcee0a} /* 400: yellow */
 .c3{--c:#ff2a6d} /* 520: pink */
 .c4{--c:#d600ff} /* A-Z: purple */
+.c5{--c:#00ffb3} /* Word Smart Bangla: neon mint */
 
 footer{margin-top:56px; padding-top:18px; border-top:1px solid rgba(25,242,224,.25); color:var(--dim); font-size:15px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px}
 
@@ -102,6 +103,7 @@ footer{margin-top:56px; padding-top:18px; border-top:1px solid rgba(25,242,224,.
   0%,86%,100%{transform:translate(0,0)}
   88%{transform:translate(5px,-2px)} 90%{transform:translate(-5px,2px)} 92%{transform:translate(3px,1px)} 94%{transform:translate(0,0)}
 }
+@media (min-width:721px){ .card:last-child:nth-child(odd){grid-column:1/-1} }
 @media (max-width:720px){ .grid{grid-template-columns:1fr} .wrap{padding-top:36px} }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
@@ -113,7 +115,7 @@ footer{margin-top:56px; padding-top:18px; border-top:1px solid rgba(25,242,224,.
   <header>
     <div class="status">SYSTEM ONLINE · SELECT A TERMINAL</div>
     <h1 data-t="CYBER VOCAB">CYBER VOCAB</h1>
-    <p class="lead">Four neural-linked terminals, one jack-in point. Pick a node, plug into the grid, and download the words straight into your cortex.</p>
+    <p class="lead">Five neural-linked terminals, one jack-in point. Pick a node, plug into the grid, and download the words straight into your cortex.</p>
   </header>
 
   <main class="grid">
@@ -152,10 +154,19 @@ footer{margin-top:56px; padding-top:18px; border-top:1px solid rgba(25,242,224,.
       <span class="pct" aria-label="Words completed"><b>0%</b><small>0 / 0</small></span>
       <span class="bar"><i></i></span>
     </a>
+
+    <a class="card c5" href="word_smart_bangla_vocabulary_hub.html" data-key="ujs_ws_saved" data-total="830" data-unit="SAVED">
+      <span class="tag">BANGLA</span>
+      <h2>Word Smart Bangla</h2>
+      <p>830 Word Smart entries decoded into Bangla by the neural translator. Bookmark the chips worth keeping and stash them in your cortex.</p>
+      <span class="go">ENTER <i></i></span>
+      <span class="pct" aria-label="Words completed"><b>0%</b><small>0 / 0</small></span>
+      <span class="bar"><i></i></span>
+    </a>
   </main>
 
   <footer>
-    <span>NODE 4 / 4 LINKED</span>
+    <span>NODE 5 / 5 LINKED</span>
     <span>STAY SHARP. STAY NEON.</span>
   </footer>
 </div>
@@ -171,7 +182,7 @@ footer{margin-top:56px; padding-top:18px; border-top:1px solid rgba(25,242,224,.
       var p=total?done/total*100:0;
       var txt=(p>0&&p<10)?p.toFixed(1):Math.round(p);
       card.querySelector('.pct b').textContent=txt+'%';
-      card.querySelector('.pct small').textContent=done+' / '+total;
+      card.querySelector('.pct small').textContent=done+' / '+total+(card.dataset.unit?' '+card.dataset.unit:'');
       card.querySelector('.bar i').style.setProperty('--p',p+'%');
     });
   }

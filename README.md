@@ -1,6 +1,6 @@
 # CYBER VOCAB
 
-A cyberpunk-styled vocabulary hub. One homepage, four neural-linked terminals. Pick a node, jack in, and study.
+A cyberpunk-styled vocabulary hub. One homepage, five neural-linked terminals. Pick a node, jack in, and study.
 
 **Live site:** https://rifat440.github.io/CYBER-VOCAB/
 
@@ -14,13 +14,14 @@ A cyberpunk-styled vocabulary hub. One homepage, four neural-linked terminals. P
 | Cyber Vocab 400 | `cyberpunk_vocab_400_flashcards_1.html` | Yellow `#fcee0a` |
 | Cyber Vocab 520 | `cyberpunk_vocab_520_flashcards_1.html` | Pink `#ff2a6d` |
 | A-Z Cyber Vocab | `cyberpunk_vocab_az_1925.html` | Purple `#d600ff` |
+| Word Smart Bangla | `word_smart_bangla_vocabulary_hub.html` | Mint `#00ffb3` |
 
 Each card on the homepage uses the accent color of the page it links to.
 
 ## Features
 
 - Cyberpunk hub homepage with neon grid background, scanlines and a glitch title
-- Four clickable cards linking to the vocab pages
+- Five clickable cards linking to the vocab pages
 - Cut-corner cards with neon glow on hover
 - Responsive layout (two columns on desktop, one on mobile)
 - Keyboard focus styles and `prefers-reduced-motion` support
@@ -35,10 +36,11 @@ CYBER-VOCAB/
 ├── cyberpunk_vocab_400_flashcards_1.html
 ├── cyberpunk_vocab_520_flashcards_1.html
 ├── cyberpunk_vocab_az_1925.html
+├── word_smart_bangla_vocabulary_hub.html
 └── README.md
 ```
 
-All links are relative, so `index.html` and the four vocab pages must stay in the same folder.
+All links are relative, so `index.html` and the five vocab pages must stay in the same folder.
 
 ## Run locally
 
@@ -63,8 +65,8 @@ Orbitron and Rajdhani are loaded from Google Fonts. Without an internet connecti
 
 ## Customize
 
-- **Card colors:** edit the `.c1` to `.c4` lines in the `<style>` block of `index.html`.
-- **Card text and links:** edit the four `<a class="card ...">` blocks in `index.html`.
+- **Card colors:** edit the `.c1` to `.c5` lines in the `<style>` block of `index.html`.
+- **Card text and links:** edit the five `<a class="card ...">` blocks in `index.html`.
 
 ---
 
