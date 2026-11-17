@@ -72,7 +72,7 @@
     select:focus { border-color:var(--y); }
 
     .scene { perspective:1200px; }
-    #flashcard-inner { position:relative; width:100%; height:430px; cursor:pointer; transform-style:preserve-3d; transition:transform .6s cubic-bezier(.3,.7,.2,1); }
+    #flashcard-inner { touch-action:pan-y; position:relative; width:100%; height:430px; cursor:pointer; transform-style:preserve-3d; transition:transform .6s cubic-bezier(.3,.7,.2,1); }
     .rotate-y-180 { transform:rotateY(180deg); }
     .face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; background:var(--panel); border:1px solid var(--line2); border-top:3px solid var(--y); padding:22px; display:flex; flex-direction:column; justify-content:space-between;
       clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100% ,0 calc(100% - 18px)); }
@@ -99,7 +99,7 @@
     .blk p { font-family:'Tiro Bangla','Rajdhani',serif; font-size:15px; line-height:1.5; color:var(--strong); }
     #back-eng-meaning { color:#fff; font-family:'Rajdhani',sans-serif; }
     #back-bangla-meaning { color:#fff; }
-    #back-example { font-style:italic; white-space:pre-line; }
+    #back-example { font-style:normal; white-space:pre-line; }
 
     .row { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
     .btn { cursor:pointer; font-weight:700; font-size:14px; letter-spacing:.18em; text-transform:uppercase; padding:13px 26px; border:none; background:#1a1a1a; color:var(--strong); transition:.15s;
@@ -198,9 +198,10 @@
       <div id="view-deck" class="hidden">
         <div class="bar">
           <button class="ghost" onclick="showGroups()">&#9668; Groups</button>
+          <button class="ghost" onclick="resetDeck()">&#8634; Reset</button>
           <div class="meta mono">DECK <b id="deck-num">01</b> &middot; <b id="word-index-indicator">1</b>/<span id="deck-total">20</span></div>
         </div>
-        <div class="scene">
+        <div class="scene" id="deck-scene">
           <div id="flashcard-inner" onclick="flipCard()">
             <div class="face front">
               <div class="top mono"><span></span><span id="mastered-tag" class="tag hidden">&#10003; MASTERED</span></div>
@@ -208,7 +209,7 @@
                 <h2 id="card-word">ABSOLUTE</h2>
                 <p id="card-ipa" class="mono"></p>
                               </div>
-              <div class="hint mono">SPACE / TAP TO FLIP</div>
+              <div class="hint mono">SPACE / TAP TO FLIP &middot; SWIPE</div>
             </div>
             <div class="face back">
               <div class="back-head"><div><h3 id="back-word"></h3><div class="sub mono">#<span id="card-id-display">001</span> &middot; <span id="pos-display" class="pos">ADJECTIVE</span></div></div><span id="back-ipa" class="mono"></span></div>
@@ -222,12 +223,13 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <button onclick="prevCard()" class="btn">&#9668; PREV</button>
+        <div id="deck-done" class="end hidden"><h4>DECK CLEARED</h4><p>ALL WORDS MASTERED</p><button onclick="resetDeck()" class="btn fill">RESET DECK</button><button onclick="showGroups()" class="btn">GROUPS</button></div>
+        <div class="row" id="deck-row">
+          <button onclick="requeueCard()" class="btn">&#8635; AGAIN +4</button>
           <button id="mastered-btn" onclick="toggleMastered()" class="btn ok">&#10003; MASTERED</button>
           <button onclick="nextCard()" class="btn fill">NEXT &#9658;</button>
         </div>
-        <div class="keys mono"><kbd>&larr;</kbd><kbd>&rarr;</kbd> move &middot; <kbd>Space</kbd> flip &middot; <kbd>M</kbd> mastered &middot; <kbd>Esc</kbd> groups</div>
+        <div class="keys mono" id="deck-keys"><kbd>&larr;</kbd> again +4 &middot; <kbd>&rarr;</kbd> next &middot; <kbd>Space</kbd> flip &middot; <kbd>M</kbd> mastered &middot; <kbd>Esc</kbd> groups</div>
       </div>
     </section>
 
@@ -326,7 +328,7 @@
       document.getElementById('view-deck').classList.add('hidden');
     }
     function openDeck(i) {
-      currentGroupIndex = i; currentCardIndexInGroup = 0;
+      currentGroupIndex = i; currentCardIndexInGroup = 0; buildQueue();
       if (isFlipped) { isFlipped = false; document.getElementById('flashcard-inner').classList.remove('rotate-y-180'); }
       document.getElementById('view-groups').classList.add('hidden');
       document.getElementById('view-deck').classList.remove('hidden');
@@ -336,10 +338,16 @@
     function showGroups() { renderGroups(); }
 
     // ---------- CARD ----------
-    function getGroupWords() { return groupWords(currentGroupIndex); }
+    let deckQueue = [], swipeLock = false;
+    function buildQueue() { deckQueue = groupWords(currentGroupIndex).filter(w => !mastered.has(w.id)); }
     function loadCard() {
-      const w = getGroupWords()[currentCardIndexInGroup];
       const $ = id => document.getElementById(id);
+      const n = deckQueue.length, done = n === 0;
+      ['deck-scene', 'deck-row', 'deck-keys'].forEach(id => $(id).classList.toggle('hidden', done));
+      $('deck-done').classList.toggle('hidden', !done);
+      $('deck-total').innerText = n;
+      if (done) { $('word-index-indicator').innerText = 0; return; }
+      const w = deckQueue[currentCardIndexInGroup];
       $('card-id-display').innerText = String(w.id).padStart(3, '0');
       $('pos-display').innerText = w.pos;
       $('card-word').innerText = w.word.toUpperCase();
@@ -353,31 +361,58 @@
       $('back-antonyms').innerText = w.antonyms;
       $('back-example').innerText = w.examples;
       $('word-index-indicator').innerText = currentCardIndexInGroup + 1;
-      $('deck-total').innerText = getGroupWords().length;
-      refreshMastered();
-    }
-    function refreshMastered() {
-      const w = getGroupWords()[currentCardIndexInGroup];
-      const on = mastered.has(w.id);
-      document.getElementById('mastered-tag').classList.toggle('hidden', !on);
-      document.getElementById('mastered-btn').classList.toggle('on', on);
-    }
-    function toggleMastered() {
-      const w = getGroupWords()[currentCardIndexInGroup];
-      if (mastered.has(w.id)) mastered.delete(w.id); else mastered.add(w.id);
-      saveMastered(); refreshMastered();
     }
     function flipCard() {
+      if (swipeLock || !deckQueue.length) return;
       isFlipped = !isFlipped;
       document.getElementById('flashcard-inner').classList.toggle('rotate-y-180', isFlipped);
     }
-    function step(d) {
-      const n = getGroupWords().length;
-      const go = () => { currentCardIndexInGroup = (currentCardIndexInGroup + d + n) % n; loadCard(); };
-      if (isFlipped) { flipCard(); setTimeout(go, 300); } else go();
+    function act(fn) {
+      if (!deckQueue.length) return;
+      if (isFlipped) { isFlipped = false; document.getElementById('flashcard-inner').classList.remove('rotate-y-180'); setTimeout(fn, 300); } else fn();
     }
-    function nextCard() { step(1); }
-    function prevCard() { step(-1); }
+    function nextCard() {
+      act(() => { currentCardIndexInGroup = (currentCardIndexInGroup + 1) % deckQueue.length; loadCard(); });
+    }
+    // Re-queue: current word comes back after 4 other cards
+    function requeueCard() {
+      if (deckQueue.length < 2) return;
+      act(() => {
+        const [w] = deckQueue.splice(currentCardIndexInGroup, 1);
+        let pos = currentCardIndexInGroup;
+        if (pos >= deckQueue.length) pos = 0;
+        deckQueue.splice(Math.min(pos + 4, deckQueue.length), 0, w);
+        currentCardIndexInGroup = pos;
+        loadCard();
+      });
+    }
+    // Mastered: remove word from the deck
+    function toggleMastered() {
+      act(() => {
+        const [w] = deckQueue.splice(currentCardIndexInGroup, 1);
+        mastered.add(w.id); saveMastered();
+        if (currentCardIndexInGroup >= deckQueue.length) currentCardIndexInGroup = 0;
+        loadCard();
+      });
+    }
+    function resetDeck() {
+      groupWords(currentGroupIndex).forEach(w => mastered.delete(w.id));
+      saveMastered(); buildQueue(); currentCardIndexInGroup = 0; loadCard();
+    }
+
+    // ---------- TOUCH SWIPE ----------
+    (function () {
+      const el = document.getElementById('flashcard-inner');
+      let sx = 0, sy = 0;
+      el.addEventListener('touchstart', e => { const t = e.changedTouches[0]; sx = t.clientX; sy = t.clientY; }, { passive: true });
+      el.addEventListener('touchend', e => {
+        const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          swipeLock = true; setTimeout(() => swipeLock = false, 400);
+          if (dx < 0) nextCard(); else requeueCard();
+        }
+      }, { passive: true });
+    })();
 
     // ---------- KEYBOARD ----------
     document.addEventListener('keydown', e => {
@@ -387,7 +422,7 @@
       const k = e.key;
       if (k === ' ' || k === 'Spacebar') { e.preventDefault(); if (document.activeElement.tagName === 'BUTTON') document.activeElement.blur(); flipCard(); }
       else if (k === 'ArrowRight') { e.preventDefault(); nextCard(); }
-      else if (k === 'ArrowLeft') { e.preventDefault(); prevCard(); }
+      else if (k === 'ArrowLeft') { e.preventDefault(); requeueCard(); }
       else if (k === 'm' || k === 'M') toggleMastered();
       else if (k === 'Escape') showGroups();
     });
@@ -409,7 +444,7 @@
 
     function startQuiz() {
       const selectedGroup = parseInt(document.getElementById('quiz-group-select').value);
-      currentQuizDataset = groupWords(selectedGroup);
+      currentQuizDataset = shuffleArray(groupWords(selectedGroup));
       currentQuizQuestionIndex = 0;
       quizScore = 0;
       updateScoreDisplay();
